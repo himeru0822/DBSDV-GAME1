@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ルーム作成・検索モード</title>
+</head>
+<body>
+  <h2>ルーム作成・検索モード</h2>
+  <button onclick="createRoom()">ルーム作成</button>
+  <ul id="room-list"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    function createRoom() {
+      socket.emit('create-room');
+    }
+
+    socket.on('room-created', (data) => {
+      alert('ルーム作成: ' + data.roomId);
+    });
+
+    socket.on('room-list', (rooms) => {
+      const list = document.getElementById('room-list');
+      list.innerHTML = '';
+      rooms.forEach(roomId => {
+        const li = document.createElement('li');
+        li.textContent = roomId;
+        li.onclick = () => {
+          socket.emit('join-room', roomId);
+        };
+        list.appendChild(li);
+      });
+    });
+
+    socket.on('room-joined', (data) => {
+      alert('ルーム参加: ' + data.roomId);
+    });
+
+    socket.emit('get-room-list');
+  </script>
+</body>
+</html>

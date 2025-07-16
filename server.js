@@ -1,37 +1,46 @@
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
-
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+const http = require('http').createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(http);
 
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+let rooms = [];
+let waitingPlayer = null;
 
 io.on('connection', (socket) => {
-  console.log('ユーザー接続:', socket.id);
-
-  socket.on('joinRoom', (roomId) => {
+  socket.on('create-room', () => {
+    const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
+    rooms.push(roomId);
     socket.join(roomId);
-    console.log(`${socket.id} がルーム ${roomId} に参加`);
-    socket.to(roomId).emit('playerJoined', socket.id);
+    socket.emit('room-created', { roomId });
+    io.emit('room-list', rooms);
   });
 
-  socket.on('cardMoved', ({ roomId, cardId }) => {
-    socket.to(roomId).emit('cardMoved', { cardId });
+  socket.on('get-room-list', () => {
+    socket.emit('room-list', rooms);
   });
 
-  socket.on('disconnect', () => {
-    console.log('ユーザー切断:', socket.id);
+  socket.on('join-room', (roomId) => {
+    socket.join(roomId);
+    socket.emit('room-joined', { roomId });
+  });
+
+  socket.on('auto-match', () => {
+    if (waitingPlayer) {
+      const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
+      socket.join(roomId);
+      waitingPlayer.join(roomId);
+      io.to(roomId).emit('match-found', { roomId });
+      waitingPlayer = null;
+    } else {
+      waitingPlayer = socket;
+    }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`サーバー起動中: http://localhost:${PORT}`);
+http.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

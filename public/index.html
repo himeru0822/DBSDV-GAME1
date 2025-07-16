@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DBSDV GAME</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>DBSDV GAME</h1>
+  <div id="mode-selection">
+    <button onclick="selectMode('room')">ルーム作成・検索</button>
+    <button onclick="selectMode('auto')">自動マッチング</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
