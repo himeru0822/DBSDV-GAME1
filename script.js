@@ -1,4 +1,7 @@
 const socket = io();
+const roomId = prompt("ルームIDを入力してください"); // 例: "room123"
+socket.emit('joinRoom', roomId);
+
 const card = document.getElementById('card1');
 const battleZone = document.getElementById('battleZone');
 
@@ -17,11 +20,9 @@ battleZone.addEventListener('drop', (e) => {
   battleZone.appendChild(card);
   battleZone.innerText = `${card.innerText} が攻撃！`;
 
-  // サーバーに通知
-  socket.emit('cardMoved', { cardId });
+  socket.emit('cardMoved', { roomId, cardId });
 });
 
-// 他のプレイヤーからの通知を受け取る
 socket.on('cardMoved', (data) => {
   const card = document.getElementById(data.cardId);
   battleZone.appendChild(card);

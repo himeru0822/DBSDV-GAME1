@@ -7,10 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// 静的ファイル（HTML, CSS, JS）を配信
 app.use(express.static(__dirname));
 
-// ルートアクセスで index.html を返す
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -18,8 +16,14 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('ユーザー接続:', socket.id);
 
-  socket.on('cardMoved', (data) => {
-    socket.broadcast.emit('cardMoved', data);
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    ${socket.id} がルーム ${roomId} に参加`);
+    socket.to(roomId).emit('playerJoined', socket.id);
+  });
+
+  socket.on('cardMoved', ({ roomId, cardId }) => {
+    socket.to(roomId).emit('cardMoved', { cardId });
   });
 
   socket.on('disconnect', () => {

@@ -8,10 +8,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
- margin-top: 30px;
+  margin-top: 30px;
 }
 
-.hand {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
