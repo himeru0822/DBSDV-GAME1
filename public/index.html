@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Socket.IO カードバトル</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>カードバトル</h1>
+  <div class="game-area">
+    <div class="hand">
+      <div class="card" draggable="true" id="card1">🔥 カード1</div>
+    </div>
+    <div class="battle-zone" id="battleZone">ここにカードをドロップ</div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

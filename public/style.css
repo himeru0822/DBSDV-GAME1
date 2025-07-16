@@ -1,0 +1,44 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+}
+
+.game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+ margin-top: 30px;
+}
+
+.hand {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.card {
+  width: 100px;
+  height: 140px;
+  background-color: white;
+  border: 2px solid #333;
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: grab;
+}
+
+.battle-zone {
+  width: 300px;
+  height: 200px;
+  border: 3px dashed #666;
+  border-radius: 10px;
+  background-color: #fffbe6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
