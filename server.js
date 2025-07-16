@@ -1,3 +1,4 @@
+
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
@@ -11,7 +12,7 @@ app.get('/', (req, res) => {
 });
 
 let rooms = [];
-let waitingPlayer = null;
+let waitingPlayers = [];
 
 io.on('connection', (socket) => {
   socket.on('create-room', () => {
@@ -37,14 +38,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('auto-match', () => {
-    if (waitingPlayer && waitingPlayer.connected) {
+    waitingPlayers.push(socket);
+
+    if (waitingPlayers.length >= 2) {
+      const player1 = waitingPlayers.shift();
+      const player2 = waitingPlayers.shift();
       const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
-      socket.join(roomId);
-      waitingPlayer.join(roomId);
+
+      player1.join(roomId);
+      player2.join(roomId);
+
       io.to(roomId).emit('match-found', { roomId });
-      waitingPlayer = null;
-    } else {
-      waitingPlayer = socket;
     }
   });
 });
