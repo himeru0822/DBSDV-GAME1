@@ -7,45 +7,12 @@
 <link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
-<div id="loginSection">
-<form id="loginForm">
-<input id="username" placeholder="ユーザー名" required="" type="text"/>
-<input id="password" placeholder="パスワード" required="" type="password"/>
-<button type="submit">ログイン</button>
-</form>
-<p id="loginMessage"></p>
-</div>
-<div id="optionsSection" style="display:none;">
-<h2>ログイン成功！</h2>
-<button onclick="alert('ルーム作成・検索を選択しました')">ルーム作成・検索</button>
-<button onclick="alert('自動マッチングを選択しました')">自動マッチング</button>
-</div>
-
 <h1>DBSDV GAME</h1>
 <div id="mode-selection">
-<button onclick="selectMode('room')">ルーム作成・検索</button>
-<button onclick="selectMode('auto')">自動マッチング</button>
+
+
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
-<script>
-const validUsers = {
-  "player1": "pass123",
-  "admin": "secure456"
-};
-
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-
-  if (validUsers[username] && validUsers[username] === password) {
-    document.getElementById("loginMessage").textContent = "ログイン成功！";
-    document.getElementById("loginSection").style.display = "none";
-    document.getElementById("optionsSection").style.display = "block";
-  } else {
-    document.getElementById("loginMessage").textContent = "ユーザー名またはパスワードが間違っています。";
-  }
-});
-</script></body>
+</body>
 </html>
