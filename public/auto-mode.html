@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>自動マッチングモード</title>
+</head>
+<body>
+  <h2>マッチング中...</h2>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // ページ読み込み時に自動マッチングを開始
+    window.onload = () => {
+      socket.emit('auto-match');
+    };
+
+    // マッチング成功時にゲーム画面へ遷移
+    socket.on('match-found', (data) => {
+      console.log('マッチング成功: ' + data.roomId);
+      window.location.href = 'game.html';
+    });
+  </script>
+</body>
+</html>
