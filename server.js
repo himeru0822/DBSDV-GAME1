@@ -18,7 +18,7 @@ io.on('connection', (socket) => {
 
   socket.on('joinRoom', (roomId) => {
     socket.join(roomId);
-    ${socket.id} がルーム ${roomId} に参加`);
+    console.log(`${socket.id} がルーム ${roomId} に参加`);
     socket.to(roomId).emit('playerJoined', socket.id);
   });
 
