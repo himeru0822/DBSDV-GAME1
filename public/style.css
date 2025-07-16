@@ -1,3 +1,9 @@
+player-names {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
+
 body {
   font-family: sans-serif;
   text-align: center;

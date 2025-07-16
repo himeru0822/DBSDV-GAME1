@@ -15,10 +15,11 @@ let rooms = [];
 let waitingPlayers = [];
 
 io.on('connection', (socket) => {
-  socket.on('create-room', () => {
+  socket.on('create-room', ({ playerName }) => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
     rooms.push(roomId);
     socket.join(roomId);
+    socket.data.playerName = playerName;
     socket.emit('room-created', { roomId });
     io.emit('room-list', rooms);
   });
@@ -27,17 +28,23 @@ io.on('connection', (socket) => {
     socket.emit('room-list', rooms);
   });
 
-  socket.on('join-room', (roomId) => {
+  socket.on('join-room', ({ roomId, playerName }) => {
     socket.join(roomId);
+    socket.data.playerName = playerName;
     socket.emit('room-joined', { roomId });
 
     const room = io.sockets.adapter.rooms.get(roomId);
     if (room && room.size === 2) {
-      io.to(roomId).emit('start-game', { roomId });
+      const players = Array.from(room).map(id => {
+        const s = io.sockets.sockets.get(id);
+        return s?.data?.playerName || 'Unknown';
+      });
+      io.to(roomId).emit('start-game', { roomId, players });
     }
   });
 
-  socket.on('auto-match', () => {
+  socket.on('auto-match', ({ playerName }) => {
+    socket.data.playerName = playerName;
     waitingPlayers.push(socket);
 
     if (waitingPlayers.length >= 2) {
@@ -48,7 +55,8 @@ io.on('connection', (socket) => {
       player1.join(roomId);
       player2.join(roomId);
 
-      io.to(roomId).emit('match-found', { roomId });
+      const players = [player1.data.playerName || 'Player1', player2.data.playerName || 'Player2'];
+      io.to(roomId).emit('match-found', { roomId, players });
     }
   });
 });
