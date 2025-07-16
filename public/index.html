@@ -7,6 +7,13 @@
 <link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
+<form id="loginForm">
+<input id="username" placeholder="ユーザー名" required="" type="text"/>
+<input id="password" placeholder="パスワード" required="" type="password"/>
+<button type="submit">ログイン</button>
+</form>
+<p id="loginMessage"></p>
+
 <h1>DBSDV GAME</h1>
 <div id="mode-selection">
 
@@ -14,5 +21,37 @@
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="client.js"></script>
-</body>
+<div id="roomButtons"><button onclick="selectMode('room')">ルーム作成・検索</button><button onclick="selectMode('auto')">自動マッチング</button></div><script>
+document.addEventListener("DOMContentLoaded", function() {
+    const validUsers = {
+        "player1": "pass123",
+        "admin": "secure456"
+    };
+
+    const loginForm = document.getElementById("loginForm");
+    const loginMessage = document.getElementById("loginMessage");
+    const roomButtons = document.getElementById("roomButtons");
+
+    // Hide room buttons initially
+    if (roomButtons) {
+        roomButtons.style.display = "none";
+    }
+
+    loginForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (validUsers[username] && validUsers[username] === password) {
+            loginMessage.textContent = "ログイン成功！";
+            loginForm.style.display = "none";
+            if (roomButtons) {
+                roomButtons.style.display = "block";
+            }
+        } else {
+            loginMessage.textContent = "ユーザー名またはパスワードが間違っています。";
+        }
+    });
+});
+</script></body>
 </html>
