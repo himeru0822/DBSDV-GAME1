@@ -35,8 +35,12 @@
     });
 
     socket.on('room-joined', (data) => {
-      alert('ルーム参加: ' + data.roomId);
-      window.location.href = 'game.html'; // Redirect to game.html after joining
+      console.log('ルーム参加: ' + data.roomId);
+    });
+
+    socket.on('start-game', (data) => {
+      console.log('ゲーム開始: ' + data.roomId);
+      window.location.href = 'game.html';
     });
 
     socket.emit('get-room-list');

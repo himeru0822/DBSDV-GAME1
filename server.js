@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
@@ -7,15 +6,16 @@ const io = new Server(http);
 
 app.use(express.static('public'));
 
-// Root route handler to confirm server is running
+// ルーム一覧をメモリ上で管理
+let rooms = [];
+
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
-let rooms = [];
-let waitingPlayer = null;
-
 io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
   socket.on('create-room', () => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
     rooms.push(roomId);
@@ -31,18 +31,16 @@ io.on('connection', (socket) => {
   socket.on('join-room', (roomId) => {
     socket.join(roomId);
     socket.emit('room-joined', { roomId });
+
+    // ルーム内の人数を確認して2人揃ったらゲーム開始
+    const room = io.sockets.adapter.rooms.get(roomId);
+    if (room && room.size === 2) {
+      io.to(roomId).emit('start-game', { roomId });
+    }
   });
 
-  socket.on('auto-match', () => {
-    if (waitingPlayer) {
-      const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
-      socket.join(roomId);
-      waitingPlayer.join(roomId);
-      io.to(roomId).emit('match-found', { roomId });
-      waitingPlayer = null;
-    } else {
-      waitingPlayer = socket;
-    }
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
   });
 });
 
