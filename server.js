@@ -6,16 +6,14 @@ const io = new Server(http);
 
 app.use(express.static('public'));
 
-// ルーム一覧をメモリ上で管理
-let rooms = [];
-
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+let rooms = [];
+let waitingPlayer = null;
 
+io.on('connection', (socket) => {
   socket.on('create-room', () => {
     const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
     rooms.push(roomId);
@@ -32,15 +30,22 @@ io.on('connection', (socket) => {
     socket.join(roomId);
     socket.emit('room-joined', { roomId });
 
-    // ルーム内の人数を確認して2人揃ったらゲーム開始
     const room = io.sockets.adapter.rooms.get(roomId);
     if (room && room.size === 2) {
       io.to(roomId).emit('start-game', { roomId });
     }
   });
 
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  socket.on('auto-match', () => {
+    if (waitingPlayer && waitingPlayer.connected) {
+      const roomId = `room-${Math.random().toString(36).substr(2, 6)}`;
+      socket.join(roomId);
+      waitingPlayer.join(roomId);
+      io.to(roomId).emit('match-found', { roomId });
+      waitingPlayer = null;
+    } else {
+      waitingPlayer = socket;
+    }
   });
 });
 
