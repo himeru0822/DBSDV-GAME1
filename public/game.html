@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ゲーム画面</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    #room-id { font-weight: bold; margin-bottom: 20px; }
+    #game-area { border: 1px solid #ccc; padding: 20px; margin: 20px auto; width: 80%; height: 300px; }
+    #leave-button { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>ゲーム画面</h1>
+  <div id="room-id">ルームID: <span id="roomIdDisplay">読み込み中...</span></div>
+  <div id="game-area">ここにゲーム内容が表示されます</div>
+  <button id="leave-button" onclick="leaveRoom()">ルームを退出</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('room-joined', (data) => {
+      document.getElementById('roomIdDisplay').textContent = data.roomId;
+    });
+
+    function leaveRoom() {
+      alert('ルームを退出します');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

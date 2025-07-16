@@ -36,6 +36,7 @@
 
     socket.on('room-joined', (data) => {
       alert('ルーム参加: ' + data.roomId);
+      window.location.href = 'game.html'; // Redirect to game.html after joining
     });
 
     socket.emit('get-room-list');
