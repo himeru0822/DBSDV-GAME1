@@ -1,37 +1,44 @@
 const socket = io();
 
-// プレイヤー名を取得
+// プレイヤー名を取得して保存
 const playerName = prompt("あなたの名前を入力してください");
 localStorage.setItem("playerName", playerName);
 
-// ルーム作成ボタンの処理
-document.getElementById("createRoomBtn").onclick = () => {
-  socket.emit('create-room', { playerName });
-};
+// 自動マッチングをサーバーに送信
+socket.emit('auto-match', { playerName });
 
-// サーバーからルーム一覧を受け取って表示
-socket.on('room-list', (rooms) => {
-  const roomListElement = document.getElementById('roomList');
-  roomListElement.innerHTML = '<h3>参加可能なルーム一覧</h3>';
-  rooms.forEach(roomId => {
-    const roomItem = document.createElement('div');
-    roomItem.textContent = roomId;
-    roomItem.style.cursor = 'pointer';
-    roomItem.style.margin = '5px 0';
-    roomItem.onclick = () => {
-      socket.emit('join-room', { roomId, playerName });
-    };
-    roomListElement.appendChild(roomItem);
-  });
-});
-
-// ページ読み込み時にルーム一覧を取得
-socket.emit('get-room-list');
-
-// マッチング成立時の処理
+// マッチング成立時にゲーム画面へ遷移
 socket.on('match-found', ({ roomId, players }) => {
-  localStorage.setItem("roomId", roomId);
   localStorage.setItem("player1", players[0]);
   localStorage.setItem("player2", players[1]);
   window.location.href = "game.html";
+});
+
+// カード移動処理（ゲーム画面用）
+const roomId = localStorage.getItem("roomId") || "default-room";
+const card = document.getElementById('card1');
+const battleZone = document.getElementById('battleZone');
+
+card.addEventListener('dragstart', (e) => {
+  e.dataTransfer.setData('text/plain', card.id);
+});
+
+battleZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+});
+
+battleZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const cardId = e.dataTransfer.getData('text/plain');
+  const card = document.getElementById(cardId);
+  battleZone.appendChild(card);
+  battleZone.innerText = `${card.innerText} が攻撃！`;
+
+  socket.emit('cardMoved', { roomId, cardId });
+});
+
+socket.on('cardMoved', (data) => {
+  const card = document.getElementById(data.cardId);
+  battleZone.appendChild(card);
+  battleZone.innerText = `${card.innerText} が攻撃！（相手）`;
 });
