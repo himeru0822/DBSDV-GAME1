@@ -1,2 +1,14 @@
+# Node.js
 node_modules/
 .env
+
+# MongoDB data
+db/
+*.lock
+*.wt
+*.bson
+WiredTiger*
+
+# OS関連
+.DS_Store
+Thumbs.db

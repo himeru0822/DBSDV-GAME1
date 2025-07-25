@@ -13,10 +13,7 @@ const { Server } = require('socket.io');
 const io = new Server(http);
 
 // ===== MongoDB接続 =====
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("✅ MongoDB接続成功"))
 .catch(err => console.error("❌ MongoDB接続エラー:", err));
 
