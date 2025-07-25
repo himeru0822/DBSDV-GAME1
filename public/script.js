@@ -9,6 +9,7 @@ socket.emit('auto-match', { playerName });
 
 // マッチング成立時にゲーム画面へ遷移
 socket.on('match-found', ({ roomId, players }) => {
+    localStorage.setItem("roomId", roomId);
   localStorage.setItem("player1", players[0]);
   localStorage.setItem("player2", players[1]);
   window.location.href = "game.html";
