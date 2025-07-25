@@ -21,14 +21,13 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
 .then(() => {
   console.log("✅ MongoDB接続成功");
-  app.listen(PORT, () => {
+  http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 })
 .catch((err) => {
   console.error("❌ MongoDB接続エラー:", err);
 });
-
 
 // ===== 新規登録API =====
 app.post('/api/register', async (req, res) => {
