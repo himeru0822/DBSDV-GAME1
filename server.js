@@ -39,6 +39,9 @@ app.post('/api/register', async (req, res) => {
 
 // ===== ログインAPI =====
 app.post('/api/login', async (req, res) => {
+  console.log("=== /api/login accessed ===");
+  console.log("req.body:", req.body); // 送信データの中身
+
   const { username, password } = req.body;
 
   try {
