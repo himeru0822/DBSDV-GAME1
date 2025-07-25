@@ -33,6 +33,7 @@ mongoose.connect(process.env.MONGODB_URI)
 // ===== 新規登録API =====
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const existingUser = await User.findOne({ username });
