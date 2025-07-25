@@ -1,8 +1,16 @@
 
-const socket = io();
+document.addEventListener("DOMContentLoaded", () => {
+  const socket = io();
 
-document.getElementById("create-room").addEventListener("click", () => {
-  const playerName = localStorage.getItem("playerName") || prompt("名前を入力してください");
-  localStorage.setItem("playerName", playerName);
-  socket.emit("create-room", { playerName });
+  const createRoomButton = document.getElementById("create-room");
+  if (createRoomButton) {
+    createRoomButton.addEventListener("click", () => {
+      let playerName = localStorage.getItem("playerName");
+      if (!playerName) {
+        playerName = prompt("あなたの名前を入力してください");
+        localStorage.setItem("playerName", playerName);
+      }
+      socket.emit("create-room", { playerName });
+    });
+  }
 });

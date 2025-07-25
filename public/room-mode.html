@@ -2,18 +2,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ルームモード</title>
+    <meta charset="UTF-8">
+    <title>ルームモード</title>
 </head>
 <body>
-  <h1>ルームモード画面</h1>
-  <button id="create-room">ルーム作成</button>
-  
-  -- Socket.IOライブラリの読み込み -->
-  <script src="/socket.io/socket.io.js"></script>
+    <h1>ルームモード</h1>
+    <button id="create-room">ルーム作成</button>
 
-  <!-- イベント処理用スクリプトの読み込み -->
-  <script src="script.js"></script>
+    <!-- Socket.IOライブラリ -->
+    <script src="/socket.io/socket.io.js"></script>
 
+    <!-- イベント処理スクリプト -->
+    <script src="script.js"></script>
+
+    <!-- DOM読み込み後に処理を実行 -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const socket = io();
+
+        document.getElementById("create-room").addEventListener("click", () => {
+            const playerName = localStorage.getItem("playerName") || prompt("名前を入力してください");
+            localStorage.setItem("playerName", playerName);
+            socket.emit("create-room", { playerName });
+        });
+    });
+    </script>
 </body>
 </html>
