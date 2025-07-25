@@ -32,6 +32,8 @@
   </div>
 
   <script>
+    const BASE_URL = 'https://dbsdv-game1.onrender.com';
+
     function selectMode(mode) {
       if (mode === 'room') window.location.href = 'room-mode.html';
       if (mode === 'auto') window.location.href = 'auto-mode.html';
@@ -44,7 +46,7 @@
       const password = document.getElementById("login-password").value;
 
       try {
-        const res = await fetch('https://dbsdv-game1.onrender.com/api/login', {
+        const res = await fetch(`${BASE_URL}/api/login`, {
           method: 'POST',
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
@@ -74,7 +76,7 @@
       const password = document.getElementById("register-password").value;
 
       try {
-        const res = await fetch('https://dbsdv-game1.onrender.com/api/register', {
+        const res = await fetch(`${BASE_URL}/api/register`, {
           method: 'POST',
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
