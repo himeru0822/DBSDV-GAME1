@@ -1,47 +1,101 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
-<meta charset="utf-8"/>
-<title>DBSDV GAME</title>
-<link href="styles.css" rel="stylesheet"/>
+  <meta charset="utf-8"/>
+  <title>DBSDV GAME</title>
+  <link href="styles.css" rel="stylesheet"/>
 </head>
 <body>
-<form id="loginForm">
-<input id="username" placeholder="ユーザー名" required="" type="text"/>
-<input id="password" placeholder="パスワード" required="" type="password"/>
-<button type="submit">ログイン</button>
-</form>
-<p id="loginMessage"></p>
-<p id="welcomeMessage" style="display:none;"></p>
+  <h1>DBSDV GAME</h1>
 
-<h1>DBSDV GAME</h1>
-<div id="mode-selection">
-<button class="room-button" onclick="selectMode('room')" style="display:none;">ルーム作成・検索</button>
-<button class="room-button" onclick="selectMode('auto')" style="display:none;">自動マッチング</button>
-</div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="client.js"></script>
-<script>
-const validUsers = {
-  "player1": "pass123",
-  "admin": "secure456"
-};
+  <!-- ログインフォーム -->
+  <form id="loginForm">
+    <input id="login-username" placeholder="ユーザー名" required type="text"/>
+    <input id="login-password" placeholder="パスワード" required type="password"/>
+    <button type="submit">ログイン</button>
+  </form>
 
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  <p id="loginMessage"></p>
 
-  if (validUsers[username] && validUsers[username] === password) {
-    document.getElementById("loginMessage").textContent = "ログイン成功！";
-    document.getElementById("loginForm").style.display = "none";
-    document.getElementById("welcomeMessage").textContent = `ようこそ、${username}さん！`;
-    document.getElementById("welcomeMessage").style.display = "block";
-    document.querySelectorAll(".room-button").forEach(btn => btn.style.display = "inline-block");
-  } else {
-    document.getElementById("loginMessage").textContent = "ユーザー名またはパスワードが間違っています。";
-  }
-});
-</script></body>
+  <!-- 登録フォーム -->
+  <form id="registerForm">
+    <input id="register-username" placeholder="新規ユーザー名" required type="text"/>
+    <input id="register-password" placeholder="パスワード" required type="password"/>
+    <button type="submit">登録</button>
+  </form>
+
+  <p id="registerMessage"></p>
+
+  <!-- ログイン成功時の表示とモード選択 -->
+  <p id="welcomeMessage" style="display:none;"></p>
+  <div id="mode-selection">
+    <button class="room-button" onclick="selectMode('room')" style="display:none;">ルーム作成・検索</button>
+    <button class="room-button" onclick="selectMode('auto')" style="display:none;">自動マッチング</button>
+  </div>
+
+  <script>
+    function selectMode(mode) {
+      if (mode === 'room') window.location.href = 'room-mode.html';
+      if (mode === 'auto') window.location.href = 'auto-mode.html';
+    }
+
+    // ログイン処理
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("login-username").value;
+      const password = document.getElementById("login-password").value;
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const msg = await res.text();
+        document.getElementById("loginMessage").textContent = msg;
+
+        if (msg === "ログイン成功") {
+          sessionStorage.setItem("username", username);
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("registerForm").style.display = "none";
+          document.getElementById("welcomeMessage").textContent = `ようこそ、${username}さん！`;
+          document.getElementById("welcomeMessage").style.display = "block";
+          document.querySelectorAll(".room-button").forEach(btn => btn.style.display = "inline-block");
+        }
+      } catch (err) {
+        document.getElementById("loginMessage").textContent = "ログイン通信エラー";
+        console.error(err);
+      }
+    });
+
+    // 登録処理
+    document.getElementById("registerForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("register-username").value;
+      const password = document.getElementById("register-password").value;
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const msg = await res.text();
+        document.getElementById("registerMessage").textContent = msg;
+
+        if (msg === "ユーザー登録が成功しました") {
+          // 登録後に自動でログインさせる処理（任意）
+          document.getElementById("login-username").value = username;
+          document.getElementById("login-password").value = password;
+          document.getElementById("loginForm").dispatchEvent(new Event("submit"));
+        }
+      } catch (err) {
+        document.getElementById("registerMessage").textContent = "登録通信エラー";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
 </html>

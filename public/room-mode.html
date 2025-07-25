@@ -11,16 +11,24 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
-
+    const socket = io(); // ← 接続先にまず接続
+  
+    const username = sessionStorage.getItem("username");
+    const userId = "user-" + Date.now();
+  
+    socket.on("connect", () => {
+      socket.emit("register-player", { username, userId });
+    });
+  
     function createRoom() {
       socket.emit('create-room');
     }
-
+  
+    // イベントハンドラたち ↓
     socket.on('room-created', (data) => {
       alert('ルーム作成: ' + data.roomId);
     });
-
+  
     socket.on('room-list', (rooms) => {
       const list = document.getElementById('room-list');
       list.innerHTML = '';
@@ -33,16 +41,16 @@
         list.appendChild(li);
       });
     });
-
+  
     socket.on('room-joined', (data) => {
       console.log('ルーム参加: ' + data.roomId);
     });
-
+  
     socket.on('start-game', (data) => {
       console.log('ゲーム開始: ' + data.roomId);
       window.location.href = 'game.html';
     });
-
+  
     socket.emit('get-room-list');
   </script>
 </body>

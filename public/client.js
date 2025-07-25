@@ -1,7 +1,14 @@
+const modeMap = {
+  room: 'room-mode.html',
+  auto: 'auto-mode.html',
+  practice: 'practice-mode.html' // 例：新モード追加
+};
+
 function selectMode(mode) {
-  if (mode === 'room') {
-    window.location.href = 'room-mode.html';
-  } else if (mode === 'auto') {
-    window.location.href = 'auto-mode.html';
+  const target = modeMap[mode];
+  if (target) {
+    window.location.href = target;
+  } else {
+    alert('不正なモードが選択されました');
   }
 }
