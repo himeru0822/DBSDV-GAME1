@@ -2,6 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const User = require('./models/User');
+
+// ===== ポート起動 =====
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 const cors = require('cors');
@@ -19,7 +23,6 @@ mongoose.connect(process.env.MONGODB_URI)
   console.log("✅ MongoDB接続成功");
 
   // ここでモデル読み込み！
-  const User = require('./models/User');
   console.log('User model:', User);
 
   http.listen(PORT, () => {
@@ -32,14 +35,17 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // ===== 新規登録API =====
 app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log('Register API called');
+  const { username: rawUsername, password } = req.body;
+  const username = rawUsername.toLowerCase().trim();
+  console.log('Received:', username, password);
+  const saltRounds = 10;
+  const hash = await bcrypt.hash(password, saltRounds);
 
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) return res.status(400).send("そのユーザー名はすでに使われています");
 
-    const hash = await bcrypt.hash(password, 10);
     await User.create({ username, passwordHash: hash, wins: 0, losses: 0 });
 
     res.status(201).send("ユーザー登録が成功しました");
@@ -52,13 +58,12 @@ app.post('/api/register', async (req, res) => {
 // ===== ログインAPI =====
 app.post('/api/login', async (req, res) => {
   console.log('Login API called');
-  const { userId, password } = req.body;
-  console.log('Received:', userId, password);
+  const { username: rawUsername, password } = req.body;
+  const username = rawUsername.toLowerCase().trim();
+  console.log('Received:', username, password);
 
   console.log("=== /api/login accessed ===");
   console.log("req.body:", req.body); // 送信データの中身
-
-  const { username, password } = req.body;
 
   try {
     const user = await User.findOne({ username });
@@ -174,5 +179,3 @@ io.on('connection', (socket) => {
   });
 });
 
-// ===== ポート起動 =====
-const PORT = process.env.PORT || 3000;
