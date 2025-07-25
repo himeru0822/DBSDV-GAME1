@@ -15,9 +15,20 @@ const { Server } = require('socket.io');
 const io = new Server(http);
 
 // ===== MongoDB接続 =====
-mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log("✅ MongoDB接続成功"))
-.catch(err => console.error("❌ MongoDB接続エラー:", err));
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("✅ MongoDB接続成功");
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+})
+.catch((err) => {
+  console.error("❌ MongoDB接続エラー:", err);
+});
+
 
 // ===== 新規登録API =====
 app.post('/api/register', async (req, res) => {
