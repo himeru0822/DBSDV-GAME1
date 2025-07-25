@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
+console.log('User model:', User);
 
 const app = express();
 const cors = require('cors');
@@ -51,6 +52,10 @@ app.post('/api/register', async (req, res) => {
 
 // ===== ログインAPI =====
 app.post('/api/login', async (req, res) => {
+  console.log('Login API called');
+  const { userId, password } = req.body;
+  console.log('Received:', userId, password);
+  
   console.log("=== /api/login accessed ===");
   console.log("req.body:", req.body); // 送信データの中身
 
