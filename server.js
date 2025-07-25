@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./models/User');
-console.log('User model:', User);
 
 const app = express();
 const cors = require('cors');
@@ -16,13 +14,13 @@ const { Server } = require('socket.io');
 const io = new Server(http);
 
 // ===== MongoDB接続 =====
-let User; // グローバルに定義だけ先に
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
   console.log("✅ MongoDB接続成功");
 
   // ここでモデル読み込み！
-  User = require('./models/User');
+  const User = require('./models/User');
+  console.log('User model:', User);
 
   http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -55,7 +53,7 @@ app.post('/api/login', async (req, res) => {
   console.log('Login API called');
   const { userId, password } = req.body;
   console.log('Received:', userId, password);
-  
+
   console.log("=== /api/login accessed ===");
   console.log("req.body:", req.body); // 送信データの中身
 
