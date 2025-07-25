@@ -87,7 +87,7 @@ io.on('connection', (socket) => {
     socket.emit('room-list', rooms);
   });
 
-  socket.on('join-room', (roomId) => {
+  socket.on('join-room', ({ roomId, playerName }) => {
     socket.join(roomId);
 
     if (players[socket.id]) {
@@ -111,7 +111,8 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('auto-match', () => {
+  socket.on('auto-match', ({ playerName }) => {
+    socket.data.playerName = playerName;
     waitingPlayers.push(socket);
 
     if (waitingPlayers.length >= 2) {

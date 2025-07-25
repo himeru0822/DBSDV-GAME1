@@ -2,34 +2,40 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ルーム作成・検索モード</title>
+  <title>ルームモード</title>
 </head>
 <body>
-  <h2>ルーム作成・検索モード</h2>
-  <button onclick="createRoom()">ルーム作成</button>
+  <h1>ルームモード</h1>
+  <button id="create-room">ルーム作成</button>
   <ul id="room-list"></ul>
 
+  <!-- Socket.IOライブラリ -->
   <script src="/socket.io/socket.io.js"></script>
+
+  <!-- マッチング・イベント処理 -->
   <script>
-    const socket = io(); // ← 接続先にまず接続
-  
+    const socket = io(); // 接続開始
+
     const username = sessionStorage.getItem("username");
     const userId = "user-" + Date.now();
-  
+
+    // 接続完了後にプレイヤー情報をサーバーへ登録
     socket.on("connect", () => {
       socket.emit("register-player", { username, userId });
     });
-  
-    function createRoom() {
-      socket.emit('create-room');
-    }
-  
-    // イベントハンドラたち ↓
-    socket.on('room-created', (data) => {
+
+    // ルーム作成ボタン処理
+    document.getElementById("create-room").addEventListener("click", () => {
+      socket.emit("create-room");
+    });
+
+    // ルーム作成後通知
+    socket.on("room-created", (data) => {
       alert('ルーム作成: ' + data.roomId);
     });
-  
-    socket.on('room-list', (rooms) => {
+
+    // ルーム一覧取得と表示
+    socket.on("room-list", (rooms) => {
       const list = document.getElementById('room-list');
       list.innerHTML = '';
       rooms.forEach(roomId => {
@@ -41,16 +47,19 @@
         list.appendChild(li);
       });
     });
-  
+
+    // ルーム参加通知
     socket.on('room-joined', (data) => {
       console.log('ルーム参加: ' + data.roomId);
     });
-  
+
+    // ゲーム開始イベント受信 → ゲーム画面へ遷移
     socket.on('start-game', (data) => {
       console.log('ゲーム開始: ' + data.roomId);
       window.location.href = 'game.html';
     });
-  
+
+    // 初期ルーム一覧取得
     socket.emit('get-room-list');
   </script>
 </body>

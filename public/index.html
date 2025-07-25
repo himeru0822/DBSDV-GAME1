@@ -14,7 +14,6 @@
     <input id="login-password" placeholder="パスワード" required type="password"/>
     <button type="submit">ログイン</button>
   </form>
-
   <p id="loginMessage"></p>
 
   <!-- 登録フォーム -->
@@ -23,7 +22,6 @@
     <input id="register-password" placeholder="パスワード" required type="password"/>
     <button type="submit">登録</button>
   </form>
-
   <p id="registerMessage"></p>
 
   <!-- ログイン成功時の表示とモード選択 -->
@@ -86,7 +84,7 @@
         document.getElementById("registerMessage").textContent = msg;
 
         if (msg === "ユーザー登録が成功しました") {
-          // 登録後に自動でログインさせる処理（任意）
+          // 登録後に自動ログイン
           document.getElementById("login-username").value = username;
           document.getElementById("login-password").value = password;
           document.getElementById("loginForm").dispatchEvent(new Event("submit"));
