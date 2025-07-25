@@ -15,12 +15,14 @@ const { Server } = require('socket.io');
 const io = new Server(http);
 
 // ===== MongoDB接続 =====
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+let User; // グローバルに定義だけ先に
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
   console.log("✅ MongoDB接続成功");
+
+  // ここでモデル読み込み！
+  User = require('./models/User');
+
   http.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
